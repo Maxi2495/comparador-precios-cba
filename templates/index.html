@@ -18,8 +18,25 @@
     <br><hr><br>
 
     {% if palabra_magica %}
-        <h2>¡Genial! Buscaste: <span style="color: blue;">{{ palabra_magica }}</span></h2>
-        <p>Pronto aquí aparecerán los precios de Disco, Vea y Jumbo...</p>
+        <h2>Resultados para: <span style="color: blue;">{{ palabra_magica }}</span></h2>
+        
+        {% if resultados %}
+            <div style="max-width: 600px; margin: 0 auto; text-align: left;">
+                {% for item in resultados %}
+                    <div style="border: 1px solid #ccc; margin-bottom: 10px; padding: 15px; border-radius: 8px;">
+                        <span style="font-weight: bold; background-color: #333; color: white; padding: 3px 8px; border-radius: 4px; font-size: 12px;">
+                            {{ item.supermercado }}
+                        </span>
+                        <h4 style="margin: 5px 0;">{{ item.producto }}</h4>
+                        <p style="color: green; font-size: 1.5em; font-weight: bold; margin: 5px 0;">${{ item.precio }}</p>
+                        <a href="{{ item.link }}" target="_blank" style="color: blue; text-decoration: none;">Ver en la tienda 🔗</a>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <p>No se encontraron productos o hubo un error en la búsqueda.</p>
+        {% endif %}
+        
     {% else %}
         <p>Escribe un producto arriba para comenzar.</p>
     {% endif %}
