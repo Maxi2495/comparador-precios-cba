@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Buscador Córdoba</title>
+</head>
+<body style="font-family: Arial, sans-serif; text-align: center; margin-top: 50px;">
+    
+    <h1>🛒 Comparador de Precios Córdoba</h1>
+    
+    <form method="POST">
+        <input type="text" name="producto_buscado" placeholder="Ej: Cerveza, Leche..." required>
+        <button type="submit">Buscar Ofertas</button>
+    </form>
+
+    <br><br>
+    <a href="https://www.disco.com.ar" target="_blank" style="padding: 10px 20px; background-color: #e31e24; color: white; text-decoration: none; border-radius: 5px;">Ir a la web de Disco</a>
+
+    <br><hr><br>
+
+    {% if palabra_magica %}
+        <h2>¡Genial! Buscaste: <span style="color: blue;">{{ palabra_magica }}</span></h2>
+        <p>Pronto aquí aparecerán los precios de Disco, Vea y Jumbo...</p>
+    {% else %}
+        <p>Escribe un producto arriba para comenzar.</p>
+    {% endif %}
+
+</body>
+</html>

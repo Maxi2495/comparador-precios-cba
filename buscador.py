@@ -1,13 +1,20 @@
 import requests
 import urllib.parse
 
-def buscar_en_disco(termino_busqueda):
+# Nuestro diccionario de supermercados disponibles
+SUPERMERCADOS = {
+    "1": {"nombre": "Disco", "url": "https://www.disco.com.ar"},
+    "2": {"nombre": "Vea",   "url": "https://www.vea.com.ar"},
+    "3": {"nombre": "Jumbo", "url": "https://www.jumbo.com.ar"}
+}
+
+def buscar_en_supermercado(termino_busqueda, url_base, nombre_super):
     termino_safe = urllib.parse.quote(termino_busqueda)
-    # Pedimos de la 0 a la 19 (20 productos) usando _from y _to si fuera necesario, 
-    # pero el buscador por defecto ya pagina.
-    url_api = f"https://www.disco.com.ar/api/catalog_system/pub/products/search?ft={termino_safe}"
     
-    print(f"🔄 Buscando '{termino_busqueda}'...")
+    # Armamos la URL dinámica usando el dominio que elegiste
+    url_api = f"{url_base}/api/catalog_system/pub/products/search?ft={termino_safe}"
+    
+    print(f"\n🔄 Buscando '{termino_busqueda}' en {nombre_super}...")
     
     try:
         headers = {
@@ -17,19 +24,17 @@ def buscar_en_disco(termino_busqueda):
         
         respuesta = requests.get(url_api, headers=headers)
         
-        # --- CORRECCIÓN AQUÍ ---
-        # Aceptamos 200 (OK) y 206 (Contenido Parcial) como válidos
         if respuesta.status_code not in [200, 206]:
-            print(f"❌ Error real de conexión. Código: {respuesta.status_code}")
+            print(f"❌ Error de conexión con {nombre_super}. Código: {respuesta.status_code}")
             return
 
         productos = respuesta.json()
         
         if len(productos) == 0:
-            print("❌ La búsqueda no arrojó resultados (Lista vacía).")
+            print("❌ La búsqueda no arrojó resultados.")
             return
 
-        print(f"\n✅ ¡Encontramos {len(productos)} productos!")
+        print(f"✅ ¡Encontramos {len(productos)} productos!")
         print("(Mostrando los primeros 10)")
         print("="*60)
 
@@ -37,14 +42,13 @@ def buscar_en_disco(termino_busqueda):
             nombre = prod.get('productName', 'Sin nombre')
             link_producto = prod.get('link', '#')
             
-            # Buscamos el precio con cuidado
             precio = 0.0
             try:
-                # Navegamos el JSON del producto
                 precio = prod['items'][0]['sellers'][0]['commertialOffer']['Price']
             except:
                 precio = 0.0
             
+            print(f"🛒 Supermercado: {nombre_super}")
             print(f"🍺 Producto: {nombre}")
             print(f"📊 Precio Base: ${precio}")
             print(f"🔗 Link: {link_producto}")
@@ -53,11 +57,28 @@ def buscar_en_disco(termino_busqueda):
     except Exception as e:
         print(f"💥 Error inesperado: {e}")
 
-# --- LOOP PRINCIPAL ---
+# --- LOOP PRINCIPAL CON MENÚ ---
 while True:
-    print("\n" + "*"*30)
-    busqueda = input("🔍 ¿Qué buscas? (o 'salir'): ")
-    if busqueda.lower() == 'salir':
-        print("¡Éxitos con el estudio! 👋")
+    print("\n" + "*"*40)
+    print("      EL GRAN COMPARADOR DE PRECIOS")
+    print("*"*40)
+    print("Elige un supermercado:")
+    print("1. Disco")
+    print("2. Vea")
+    print("3. Jumbo")
+    print("4. Salir")
+    
+    opcion = input("👉 Ingresa el número de tu opción: ")
+    
+    if opcion == "4":
+        print("¡Nos vemos! 👋")
         break
-    buscar_en_disco(busqueda)
+        
+    if opcion in SUPERMERCADOS:
+        super_elegido = SUPERMERCADOS[opcion]
+        busqueda = input(f"🔍 ¿Qué quieres buscar en {super_elegido['nombre']}?: ")
+        
+        # Le pasamos a la función qué buscar, la URL de ese super, y su nombre
+        buscar_en_supermercado(busqueda, super_elegido['url'], super_elegido['nombre'])
+    else:
+        print("❌ Opción no válida. Por favor, elige 1, 2, 3 o 4.")
