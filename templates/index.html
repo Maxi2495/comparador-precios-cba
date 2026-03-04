@@ -2,44 +2,89 @@
 <html>
 <head>
     <title>Buscador Córdoba</title>
+    <script>
+        function mostrarCarga() {
+            document.getElementById('contenedor-resultados').style.display = 'none';
+            document.getElementById('pantalla-carga').style.display = 'block';
+        }
+    </script>
 </head>
 <body style="font-family: Arial, sans-serif; text-align: center; margin-top: 50px;">
     
     <h1>🛒 Comparador de Precios Córdoba</h1>
     
-    <form method="POST">
-        <input type="text" name="producto_buscado" placeholder="Ej: Cerveza, Leche..." required>
-        <button type="submit">Buscar Ofertas</button>
-    </form>
+    <form method="POST" onsubmit="mostrarCarga()">
+        <input type="text" name="producto_buscado" placeholder="Ej: Cerveza, Leche..." required style="padding: 5px; width: 200px;">
+        
+        <br><br>
+        
+        <label>¿Dónde buscamos?</label><br>
+        <input type="checkbox" name="supermercados" value="Disco" checked> Disco
+        <input type="checkbox" name="supermercados" value="Vea" checked> Vea
+        <input type="checkbox" name="supermercados" value="Jumbo" checked> Jumbo
+        <input type="checkbox" name="supermercados" value="Super Mami" checked> Super Mami
+        
+        <br><br>
 
-    <br><br>
-    <a href="https://www.disco.com.ar" target="_blank" style="padding: 10px 20px; background-color: #e31e24; color: white; text-decoration: none; border-radius: 5px;">Ir a la web de Disco</a>
+        <label>Ordenar por precio:</label>
+        <select name="orden" style="padding: 5px;">
+            <option value="menor">Más barato primero</option>
+            <option value="mayor">Más caro primero</option>
+        </select>
+        
+        <br><br>
+        
+        <button type="submit" style="padding: 8px 15px; cursor: pointer;">Buscar Ofertas</button>
+    </form>
 
     <br><hr><br>
 
-    {% if palabra_magica %}
-        <h2>Resultados para: <span style="color: blue;">{{ palabra_magica }}</span></h2>
-        
-        {% if resultados %}
-            <div style="max-width: 600px; margin: 0 auto; text-align: left;">
-                {% for item in resultados %}
-                    <div style="border: 1px solid #ccc; margin-bottom: 10px; padding: 15px; border-radius: 8px;">
-                        <span style="font-weight: bold; background-color: #333; color: white; padding: 3px 8px; border-radius: 4px; font-size: 12px;">
-                            {{ item.supermercado }}
-                        </span>
-                        <h4 style="margin: 5px 0;">{{ item.producto }}</h4>
-                        <p style="color: green; font-size: 1.5em; font-weight: bold; margin: 5px 0;">${{ item.precio }}</p>
-                        <a href="{{ item.link }}" target="_blank" style="color: blue; text-decoration: none;">Ver en la tienda 🔗</a>
-                    </div>
-                {% endfor %}
-            </div>
+    <div id="pantalla-carga" style="display: none; margin-top: 40px; color: #555;">
+        <h2>⏳ Buscando y comparando precios...</h2>
+        <p>Esto puede demorar unos segundos dependiendo de la conexión con cada supermercado.</p>
+    </div>
+
+    <div id="contenedor-resultados">
+        {% if palabra_magica %}
+            <h2>Resultados para: <span style="color: blue;">{{ palabra_magica }}</span></h2>
+            
+            {% if resultados %}
+                <div style="max-width: 600px; margin: 0 auto; text-align: left;">
+                    {% for item in resultados %}
+                        <div style="border: 1px solid #ccc; margin-bottom: 10px; padding: 15px; border-radius: 8px;">
+                            
+                            <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 5px;">
+                                {% if item.supermercado == 'Disco' %}
+                                    <img src="{{ url_for('static', filename='disco.png') }}" alt="Disco" style="height: 25px;">
+                                {% elif item.supermercado == 'Vea' %}
+                                    <img src="{{ url_for('static', filename='vea.png') }}" alt="Vea" style="height: 25px;">
+                                {% elif item.supermercado == 'Jumbo' %}
+                                    <img src="{{ url_for('static', filename='jumbo.webp') }}" alt="Jumbo" style="height: 25px;">
+                                {% elif item.supermercado == 'Super Mami' %}
+                                    <img src="{{ url_for('static', filename='mami.png') }}" alt="Super Mami" style="height: 25px;">
+                                {% elif item.supermercado == 'Super Mami' %}
+                                    <img src="{{ url_for('static', filename='cordiez.png') }}" alt="Cordiez" style="height: 25px;">
+                                {% endif %}
+                                
+                                <span style="font-weight: bold; background-color: #333; color: white; padding: 3px 8px; border-radius: 4px; font-size: 12px;">
+                                    {{ item.supermercado }}
+                                </span>
+                            </div>
+
+                            <h4 style="margin: 5px 0;">{{ item.producto }}</h4>
+                            <p style="color: green; font-size: 1.5em; font-weight: bold; margin: 5px 0;">${{ item.precio }}</p>
+                            <a href="{{ item.link }}" target="_blank" style="color: blue; text-decoration: none;">Ver en la tienda 🔗</a>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <p>No se encontraron productos o hubo un error en la búsqueda.</p>
+            {% endif %}
+            
         {% else %}
-            <p>No se encontraron productos o hubo un error en la búsqueda.</p>
+            <p>Escribe un producto arriba para comenzar.</p>
         {% endif %}
-        
-    {% else %}
-        <p>Escribe un producto arriba para comenzar.</p>
-    {% endif %}
+    </div>
 
 </body>
 </html>
