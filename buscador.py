@@ -6,7 +6,8 @@ from bs4 import BeautifulSoup
 SUPERMERCADOS = [
     {"nombre": "Disco", "url_base": "https://www.disco.com.ar"},
     {"nombre": "Vea",   "url_base": "https://www.vea.com.ar"},
-    {"nombre": "Jumbo", "url_base": "https://www.jumbo.com.ar"}
+    {"nombre": "Jumbo", "url_base": "https://www.jumbo.com.ar"},
+    {"nombre": "Cordiez", "url_base": "https://www.cordiez.com.ar"}
 ]
 
 def buscar_productos(termino_busqueda, supers_elegidos, orden):

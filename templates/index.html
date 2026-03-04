@@ -1,16 +1,84 @@
 <!DOCTYPE html>
-<html>
+<html lang="es">
 <head>
+    <meta charset="UTF-8">
     <title>Buscador Córdoba</title>
+    <style>
+        /* Estilos base (Modo Claro por defecto) */
+        body {
+            font-family: Arial, sans-serif; 
+            text-align: center; 
+            margin-top: 50px;
+            background-color: #ffffff;
+            color: #000000;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        /* Reglas que se aplican solo cuando está activo el Modo Oscuro */
+        body.dark-mode {
+            background-color: #1a1a1a;
+            color: #f0f0f0;
+        }
+
+        /* Oscurecemos las tarjetas de los productos */
+        body.dark-mode div[style*="border: 1px solid #ccc"] {
+            border-color: #444 !important;
+            background-color: #2d2d2d;
+        }
+
+        body.dark-mode a {
+            color: #66b3ff !important;
+        }
+
+        /* Diseño del botón del interruptor */
+        #btn-toggle-tema {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            padding: 8px 12px;
+            cursor: pointer;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            background-color: #f0f0f0;
+        }
+
+        body.dark-mode #btn-toggle-tema {
+            background-color: #333;
+            color: #fff;
+            border-color: #555;
+        }
+    </style>
     <script>
         function mostrarCarga() {
             document.getElementById('contenedor-resultados').style.display = 'none';
             document.getElementById('pantalla-carga').style.display = 'block';
         }
+
+        // Función para alternar el tema visual
+        function toggleTema() {
+            var cuerpo = document.body;
+            cuerpo.classList.toggle("dark-mode");
+            
+            // Guardamos la preferencia en la memoria del navegador
+            if (cuerpo.classList.contains("dark-mode")) {
+                localStorage.setItem("tema", "oscuro");
+            } else {
+                localStorage.setItem("tema", "claro");
+            }
+        }
+
+        // Al abrir la página, revisamos si el usuario ya había elegido el modo oscuro
+        window.onload = function() {
+            if (localStorage.getItem("tema") === "oscuro") {
+                document.body.classList.add("dark-mode");
+            }
+        };
     </script>
 </head>
-<body style="font-family: Arial, sans-serif; text-align: center; margin-top: 50px;">
+<body>
     
+    <button id="btn-toggle-tema" onclick="toggleTema()">🌙 / ☀️</button>
+
     <h1>🛒 Comparador de Precios Córdoba</h1>
     
     <form method="POST" onsubmit="mostrarCarga()">
@@ -23,6 +91,7 @@
         <input type="checkbox" name="supermercados" value="Vea" checked> Vea
         <input type="checkbox" name="supermercados" value="Jumbo" checked> Jumbo
         <input type="checkbox" name="supermercados" value="Super Mami" checked> Super Mami
+        <input type="checkbox" name="supermercados" value="Cordiez" checked> Cordiez
         
         <br><br>
 
@@ -39,14 +108,14 @@
 
     <br><hr><br>
 
-    <div id="pantalla-carga" style="display: none; margin-top: 40px; color: #555;">
+    <div id="pantalla-carga" style="display: none; margin-top: 40px; color: #888;">
         <h2>⏳ Buscando y comparando precios...</h2>
         <p>Esto puede demorar unos segundos dependiendo de la conexión con cada supermercado.</p>
     </div>
 
     <div id="contenedor-resultados">
         {% if palabra_magica %}
-            <h2>Resultados para: <span style="color: blue;">{{ palabra_magica }}</span></h2>
+            <h2>Resultados para: <span style="color: #66b3ff;">{{ palabra_magica }}</span></h2>
             
             {% if resultados %}
                 <div style="max-width: 600px; margin: 0 auto; text-align: left;">
@@ -62,7 +131,7 @@
                                     <img src="{{ url_for('static', filename='jumbo.webp') }}" alt="Jumbo" style="height: 25px;">
                                 {% elif item.supermercado == 'Super Mami' %}
                                     <img src="{{ url_for('static', filename='mami.png') }}" alt="Super Mami" style="height: 25px;">
-                                {% elif item.supermercado == 'Super Mami' %}
+                                {% elif item.supermercado == 'Cordiez' %}
                                     <img src="{{ url_for('static', filename='cordiez.png') }}" alt="Cordiez" style="height: 25px;">
                                 {% endif %}
                                 
@@ -72,8 +141,8 @@
                             </div>
 
                             <h4 style="margin: 5px 0;">{{ item.producto }}</h4>
-                            <p style="color: green; font-size: 1.5em; font-weight: bold; margin: 5px 0;">${{ item.precio }}</p>
-                            <a href="{{ item.link }}" target="_blank" style="color: blue; text-decoration: none;">Ver en la tienda 🔗</a>
+                            <p style="color: #28a745; font-size: 1.5em; font-weight: bold; margin: 5px 0;">${{ item.precio }}</p>
+                            <a href="{{ item.link }}" target="_blank" style="color: #66b3ff; text-decoration: none;">Ver en la tienda 🔗</a>
                         </div>
                     {% endfor %}
                 </div>
