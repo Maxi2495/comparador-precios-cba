@@ -2,6 +2,7 @@ import requests
 import urllib.parse
 import re
 from bs4 import BeautifulSoup
+import sqlite3
 
 SUPERMERCADOS = [
     {"nombre": "Disco", "url_base": "https://www.disco.com.ar"},
@@ -90,4 +91,29 @@ def buscar_productos(termino_busqueda, supers_elegidos, orden):
     else:
         resultados_ordenados = sorted(resultados_totales, key=lambda x: x['precio'])
         
+    # --- NUEVO: GUARDAR EN BASE DE DATOS SQLITE ---
+    if resultados_ordenados: # Solo guardamos si realmente encontramos productos
+        try:
+            conexion = sqlite3.connect('precios.db')
+            cursor = conexion.cursor()
+
+            # 1. Registramos el evento de búsqueda en la tabla principal
+            # Usamos (?) para evitar inyecciones SQL, una práctica de seguridad fundamental
+            cursor.execute('INSERT INTO busquedas (termino) VALUES (?)', (termino_busqueda,))
+            
+            # Recuperamos el ID que SQLite le asignó automáticamente a esta búsqueda (Primary Key)
+            busqueda_id = cursor.lastrowid 
+
+            # 2. Insertamos cada producto enlazado a ese ID (Foreign Key)
+            for item in resultados_ordenados:
+                cursor.execute('''
+                    INSERT INTO resultados (busqueda_id, supermercado, producto, precio, link)
+                    VALUES (?, ?, ?, ?, ?)
+                ''', (busqueda_id, item['supermercado'], item['producto'], item['precio'], item['link']))
+
+            conexion.commit() # Confirmamos la transacción
+            conexion.close()
+        except Exception as e:
+            print(f"Error de SQL: {e}")
+
     return resultados_ordenados
