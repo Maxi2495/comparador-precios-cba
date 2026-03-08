@@ -92,6 +92,7 @@
         <input type="checkbox" name="supermercados" value="Jumbo" checked> Jumbo
         <input type="checkbox" name="supermercados" value="Super Mami" checked> Super Mami
         <input type="checkbox" name="supermercados" value="Cordiez" checked> Cordiez
+        <input type="checkbox" name="supermercados" value="Carrefour" checked> Carrefour
         
         <br><br>
 
@@ -133,6 +134,8 @@
                                     <img src="{{ url_for('static', filename='mami.png') }}" alt="Super Mami" style="height: 25px;">
                                 {% elif item.supermercado == 'Cordiez' %}
                                     <img src="{{ url_for('static', filename='cordiez.png') }}" alt="Cordiez" style="height: 25px;">
+                                {% elif item.supermercado == 'Carrefour' %}
+                                    <img src="{{ url_for('static', filename='carrefour.png') }}" alt="Carrefour" style="height: 25px;">
                                 {% endif %}
                                 
                                 <span style="font-weight: bold; background-color: #333; color: white; padding: 3px 8px; border-radius: 4px; font-size: 12px;">

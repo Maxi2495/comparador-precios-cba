@@ -26,4 +26,4 @@ def inicio():
     return render_template('index.html', palabra_magica=palabra_ingresada, resultados=lista_resultados)
 
 if __name__ == '__main__':
-    app.run(debug=False)
+    app.run(debug=True)

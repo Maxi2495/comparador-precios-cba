@@ -8,7 +8,7 @@ SUPERMERCADOS = [
     {"nombre": "Disco", "url_base": "https://www.disco.com.ar"},
     {"nombre": "Vea",   "url_base": "https://www.vea.com.ar"},
     {"nombre": "Jumbo", "url_base": "https://www.jumbo.com.ar"},
-    {"nombre": "Cordiez", "url_base": "https://www.cordiez.com.ar"}
+    {"nombre": "Cordiez", "url_base": "https://www.cordiez.com.ar"}    
 ]
 
 def buscar_productos(termino_busqueda, supers_elegidos, orden):
@@ -82,6 +82,40 @@ def buscar_productos(termino_busqueda, supers_elegidos, orden):
                                 "link": link_mami
                             })
                         break # Salimos del loop una vez que encontramos el script correcto
+        except Exception:
+            pass
+        
+        # --- BLOQUE 3: CARREFOUR (VTEX IO / Intelligent Search) ---
+    if supers_elegidos and "Carrefour" in supers_elegidos:
+        url_carrefour = f"https://www.carrefour.com.ar/api/io/_v/api/intelligent-search/product_search/?query={termino_safe}"
+        
+        try:
+            resp_carrefour = requests.get(url_carrefour, headers=headers, timeout=15)
+            if resp_carrefour.status_code == 200:
+                data_carrefour = resp_carrefour.json()
+                
+                productos_vtex_io = data_carrefour.get('products', []) if isinstance(data_carrefour, dict) else data_carrefour
+                
+                for prod in productos_vtex_io:
+                    try:
+                        titulo = prod.get('productName', 'Sin nombre')
+                        link_parcial = prod.get('linkText', '')
+                        link = f"https://www.carrefour.com.ar/{link_parcial}/p" if link_parcial else "#"
+                        
+                        items = prod.get('items', [])
+                        if items:
+                            precio = items[0]['sellers'][0]['commertialOffer']['Price']
+                            stock = items[0]['sellers'][0]['commertialOffer']['AvailableQuantity']
+                            
+                            if stock > 0 and precio > 0:
+                                resultados_totales.append({
+                                    "supermercado": "Carrefour",
+                                    "producto": titulo,
+                                    "precio": float(precio),
+                                    "link": link
+                                })
+                    except:
+                        continue
         except Exception:
             pass
 
